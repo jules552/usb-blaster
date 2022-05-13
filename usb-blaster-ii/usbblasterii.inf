@@ -1,0 +1,157 @@
+; USBBLASTERII.INF
+; Copyright (c) 2013-2014 Altera Corporation
+; Altera USB-Blaster II driver installation using the WinUSB kernel-mode driver for Windows XP and Windows 7 (x86 and x64).
+;
+
+; ====================== Version ======================
+
+[Version]
+Signature="$Windows NT$"
+Class=%ClassName%
+ClassGuid={09FB6000-ADAD-1000-0000-00B0D03D3169}
+Provider=%Altera%
+CatalogFile=usbblasterii.cat
+DriverVer=%DriverDateAndVersion%
+
+; =================== Class section ===================
+
+[ClassInstall32]
+Addreg=JTAGCablesDeviceClassReg
+
+[JTAGCablesDeviceClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-20
+
+; =========== Manufacturer/Models sections ============
+
+[Manufacturer]
+%Altera%=AlteraHW,NTx86,NTamd64
+
+[AlteraHW.NTx86]
+%JTAGName%=JTAG_Install, USB\VID_09FB&PID_6010&MI_00
+%SystemConsoleName%=SystemConsole_Install, USB\VID_09FB&PID_6010&MI_01
+%UnconfiguredName%=Unconfigured_Install, USB\VID_09FB&PID_6810
+
+[AlteraHW.NTamd64]
+%JTAGName%=JTAG_Install, USB\VID_09FB&PID_6010&MI_00
+%SystemConsoleName%=SystemConsole_Install, USB\VID_09FB&PID_6010&MI_01
+%UnconfiguredName%=Unconfigured_Install, USB\VID_09FB&PID_6810
+
+; ==================== Installation ===================
+
+[JTAG_Install]
+Include=winusb.inf
+Needs=WINUSB.NT
+
+[SystemConsole_Install]
+Include=winusb.inf
+Needs=WINUSB.NT
+
+[Unconfigured_Install]
+Include=winusb.inf
+Needs=WINUSB.NT
+
+[JTAG_Install.Services]
+Include=winusb.inf
+AddService=WinUSB,0x00000002,WinUSB_ServiceInstall
+
+[SystemConsole_Install.Services]
+Include=winusb.inf
+AddService=WinUSB,0x00000002,WinUSB_ServiceInstall
+
+[Unconfigured_Install.Services]
+Include=winusb.inf
+AddService=WinUSB,0x00000002,WinUSB_ServiceInstall
+
+[WinUSB_ServiceInstall]
+DisplayName     = %WinUSB_SvcDesc%
+ServiceType     = 1
+StartType       = 3
+ErrorControl    = 1
+ServiceBinary   = %12%\WinUSB.sys
+
+[JTAG_Install.Wdf]
+KmdfService=WINUSB, WinUSB_Install
+
+[SystemConsole_Install.Wdf]
+KmdfService=WINUSB, WinUSB_Install
+
+[Unconfigured_Install.Wdf]
+KmdfService=WINUSB, WinUSB_Install
+
+[WinUSB_Install]
+KmdfLibraryVersion=1.9
+
+[JTAG_Install.HW]
+AddReg=JTAG_AddReg
+
+[SystemConsole_Install.HW]
+AddReg=SystemConsole_AddReg
+
+[Unconfigured_Install.HW]
+AddReg=Unconfigured_AddReg
+
+[JTAG_AddReg]
+HKR,,DeviceInterfaceGUIDs,0x10000,%JTAGGUID%
+
+[SystemConsole_AddReg]
+HKR,,DeviceInterfaceGUIDs,0x10000,%SystemConsoleGUID%
+
+[Unconfigured_AddReg]
+HKR,,DeviceInterfaceGUIDs,0x10000,%UnconfiguredGUID%
+
+[JTAG_Install.CoInstallers]
+AddReg=CoInstallers_AddReg
+CopyFiles=CoInstallers_CopyFiles
+
+[SystemConsole_Install.CoInstallers]
+AddReg=CoInstallers_AddReg
+CopyFiles=CoInstallers_CopyFiles
+
+[Unconfigured_Install.CoInstallers]
+AddReg=CoInstallers_AddReg
+CopyFiles=CoInstallers_CopyFiles
+
+[CoInstallers_AddReg]
+HKR,,CoInstallers32,0x00010000,"WdfCoInstaller01009.dll,WdfCoInstaller","WinUSBCoInstaller2.dll"
+
+[CoInstallers_CopyFiles]
+WinUSBCoInstaller2.dll
+WdfCoInstaller01009.dll
+
+[DestinationDirs]
+CoInstallers_CopyFiles=11
+
+; =============== Source Media Section ================
+
+[SourceDisksNames]
+1=%DiskName%
+
+[SourceDisksFiles.x86]
+WinUSBCoInstaller2.dll=1,x32
+WdfCoInstaller01009.dll=1,x32
+
+[SourceDisksFiles.amd64]
+WinUSBCoInstaller2.dll=1,x64
+WdfCoInstaller01009.dll=1,x64
+
+; ===================== Strings =======================
+
+[Strings]
+
+Altera="Altera"
+JTAGName="Altera USB-Blaster II (JTAG interface)"
+SystemConsoleName="Altera USB-Blaster II (System Console interface)"
+UnconfiguredName="Altera USB-Blaster II (Unconfigured)"
+
+JTAGGUID="{09FB6001-0000-1000-0000-00B0D03D3169}"
+SystemConsoleGUID="{09FB6010-0001-1000-0000-00B0D03D3169}"
+UnconfiguredGUID="{09FB6810-0000-1000-0000-00B0D03D3169}"
+
+; DriverVer MUST be in MM/DD/YYYY[,<version>] format
+DriverDateAndVersion="10/13/2018"
+
+WinUSB_SvcDesc="WinUSBService"
+DiskName="Altera USB-Blaster II Driver Install Package"
+DESC="Altera USB-Blaster II driver installation package using the WinUSB kernel-mode driver for Windows XP and Windows 7 (x86 and x64)"
+ClassName="JTAG cables"
